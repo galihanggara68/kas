@@ -1,53 +1,44 @@
 <?php
-
 namespace App\Exports;
 
 use App\Transaction;
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromView;
+use App\TransactionDetail;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Carbon\Carbon;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 
-// class TransactionExport implements FromCollection, WithMapping, WithHeadings
-class TransactionExport implements FromView
+class TransactionExport implements FromCollection, WithMapping
 {
-    private $from,$to;
+    private $startDate;
+    private $endDate;
 
-    public function __construct()
+    public function setDate($startDate, $endDate)
     {
-        $this->transaction = new Transaction();
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
     }
 
-    public function setDate($from,$to){
-        $this->from = $from.' 00:00:00';
-        $this->to = $to.' 23:59:59';
-    }
-
-
-    public function view(): View
+    public function collection()
     {
-        return view('backend.transaction.export', [
-            'transaction' => $this->transaction->where('status','selesai')->whereBetween('created_at',[$this->from,$this->to])->get()
-        ]);
+        return Transaction::query()->with("account", "details")->whereBetween("transaction_date", [$this->startDate, $this->endDate])->get();
     }
 
-    // public function map($transaction): array
-    // {
-    //     return [
-    //         $transaction->invoice_no,
-    //         Carbon::parse($transaction->date)->format('Y-m-d'),
-    //         Carbon::parse($transaction->date)->format('H:i:s'),
-    //         $transaction->customer->name,
-    //         $transaction->amount,
-    //         $transaction->status
-    //     ];
-    // }
-
-    // public function headings(): array{
-    //     return [
-    //         ['Invoice', 'Tanggal','Waktu','Pelanggan','Total','Status']
-    //     ];
-    // }
+    public function map($transaction): array
+    {
+        return [
+            $transaction->id,
+            $transaction->account->name,
+            $transaction->description,
+            $transaction->transaction_date,
+            $transaction->amount,
+            $transaction->details->map(function ($detail) {
+                return [
+                    $detail->name,
+                    $detail->qty,
+                    $detail->price,
+                    $detail->amount
+                ];
+            })
+        ];
+    }
 }

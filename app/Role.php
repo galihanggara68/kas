@@ -4,12 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Traits\TestUuids;
+use App\Traits\Uuids;
 
 class Role extends Model
 {
     use SoftDeletes;
-    use TestUuids;
+    use Uuids;
 
     protected $table = 'roles';
     protected $dates = ['deleted_at'];

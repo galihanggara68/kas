@@ -21,9 +21,10 @@
         "spatie/laravel-fractal": "^5.5",
         "unisharp/laravel-ckeditor": "^4.7",
         "watson/active": "^3.1",
-        "yajra/laravel-datatables-oracle": "^9.0"
+        "yajra/laravel-datatables": "^1.5"
     },
     "require-dev": {
+        "andyabih/laravel-to-uml": "^1.0",
         "beyondcode/laravel-dump-server": "^1.0",
         "filp/whoops": "^2.0",
         "fzaninotto/faker": "^1.4",

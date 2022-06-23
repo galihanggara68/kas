@@ -8,7 +8,7 @@
     <meta name="author" content="">
 
     <title>Admin | @yield('title')</title>
-    <link href="{{asset('assets/img/favicon.png')}}" rel="icon" type="image/png">
+    <link href="{{asset('assets/img/favicon.ico')}}" rel="icon" type="image/ico">
     <!-- Custom fonts for this template-->
     <link href="{{asset('assets/vendor/fontawesome-free/css/all.min.css')}}" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">

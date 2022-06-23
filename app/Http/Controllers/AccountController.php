@@ -41,6 +41,9 @@ class AccountController extends Controller
 
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required|string'
+        ]);
         DB::beginTransaction();
         try {
             $requset = $request->merge(['slug'=>$request->name]);
@@ -70,6 +73,9 @@ class AccountController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->validate($request, [
+            'name' => 'required|string'
+        ]);
         DB::beginTransaction();
         try {
             $request = $request->merge(['slug'=>$request->name]);

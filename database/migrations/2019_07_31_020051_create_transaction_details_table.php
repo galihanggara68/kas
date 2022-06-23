@@ -16,6 +16,7 @@ class CreateTransactionDetailsTable extends Migration
         Schema::create('transaction_details', function (Blueprint $table) {
             $table->uuid('id');
             $table->uuid('transaction_id');
+            $table->bigInteger('product_id')->nullable();
             $table->string('name')->nullable();
             $table->string('slug')->nullable();
             $table->string('qty')->nullable();

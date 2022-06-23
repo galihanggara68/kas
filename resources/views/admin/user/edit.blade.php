@@ -14,7 +14,7 @@
                     <div class="col">
                         <div class="form-group">
                           <label>Nama</label>
-                          <input type="text" name="name" value="{{$data->name}}" class="form-control form-control-sm" required="">
+                          <input type="text" name="name" value="{{old('name') ?? $data->name}}" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" required="">
                         </div>
                     </div>
                     <div class="col">
@@ -32,13 +32,13 @@
                     <div class="col">
                         <div class="form-group">
                           <label>Username</label>
-                          <input type="text" name="username" value="{{$data->username}}" class="form-control form-control-sm" required="">
+                          <input type="text" name="username" value="{{old('username') ?? $data->username}}" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" required="">
                         </div>
                     </div>
                     <div class="col">
                         <div class="form-group">
                           <label>Password</label>
-                          <input type="text" name="password" value="rahasia" class="form-control form-control-sm" required="">
+                          <input type="text" name="password" value="{{old('name') ?? null}}" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" required="">
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                     <div class="col">
                         <div class="form-group">
                           <label>Email</label>
-                          <input type="email" name="email" value="{{$data->email}}" class="form-control form-control-sm" required="">
+                          <input type="email" name="email" value="{{old('email') ?? $data->email}}" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" required="">
                         </div>
                     </div>
                 </div>

@@ -13,8 +13,13 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
-                          <label>Nama</label>
-                          <input type="text" name="name" value="{{$data->name}}" class="form-control form-control-sm" required="">
+                            <label>Nama</label>
+                            <input type="text" name="name" value="{{old('name') ?? $data->name}}" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" required="">
+                            @if ($errors->has('name'))
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $errors->first('name') }}</strong>
+                                </span>
+                            @endif
                         </div>
                     </div>
                 </div>

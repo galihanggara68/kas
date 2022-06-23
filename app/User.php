@@ -2,16 +2,16 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Traits\TestUuids;
+use App\Traits\Uuids;
+use App\Role;
 
 class User extends Authenticatable
 {
     use Notifiable;
-    use TestUuids;
+    use Uuids;
     use SoftDeletes;
 
     protected $table = 'users';
@@ -33,6 +33,6 @@ class User extends Authenticatable
 
     public function role()
     {
-        return $this->belongsTo('App\Role')->withTrashed();
+        return $this->belongsTo(Role::class)->withTrashed();
     }
 }

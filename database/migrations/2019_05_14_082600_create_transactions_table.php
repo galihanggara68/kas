@@ -15,14 +15,14 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id');
-            $table->uuid('account_id')->nullable();
-            $table->string('transaction_type')->nullable();
-            $table->date('transaction_date')->nullable();
+            $table->uuid('account_id');
+            $table->string('transaction_type');
+            $table->date('transaction_date');
             $table->string('name')->nullable();
-            $table->string('slug')->nullable();            
+            $table->string('slug')->nullable();
             $table->text('description')->nullable();
-            $table->string('images')->nullable();            
-            $table->string('amount')->nullable();            
+            $table->string('images')->nullable();
+            $table->string('amount');
             $table->softDeletes();
             $table->timestamps();
         });

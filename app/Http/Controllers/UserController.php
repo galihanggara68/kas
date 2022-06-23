@@ -6,9 +6,8 @@ use App\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Auth;
 use App\Role;
 
@@ -37,11 +36,11 @@ class UserController extends Controller
             }
             })
             ->addColumn('name', function ($data) {
-                return title_case($data->name);
+                return Str::title($data->name);
 
             })
             ->addColumn('role', function ($data) {
-                return title_case($data->role->name);
+                return Str::title($data->role->name);
             })
             ->addIndexColumn()
             ->addColumn('action', 'admin.user.index-action')
@@ -57,10 +56,16 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6',
+            'role_id' => 'required|exists:roles,id'
+        ]);
         DB::beginTransaction();
         try {
             $request = $request->merge(['password'=>Hash::make($request->password)]);
-            $user = $this->user->create($request->all());
+            $this->user->create($request->all());
             DB::commit();
             return redirect()->route('user.index')->with('success-message','Data telah disimpan');
         } catch (\Exception $e) {
@@ -88,6 +93,12 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->validate($request, [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email,'.$id,
+            'password' => 'nullable|string|min:6',
+            'role_id' => 'required|exists:roles,id'
+        ]);
         DB::beginTransaction();
         try {
             $request = $request->merge(['password'=>Hash::make($request->password)]);
@@ -111,8 +122,12 @@ class UserController extends Controller
         return view('admin.user.change');
     }
 
-    public function updatePassword(Request $request){
-
+    public function updatePassword(Request $request)
+    {
+        $this->validate($request, [
+            'new_password' => 'required|string|min:6',
+            'confirm_password' => 'required|same:new_password'
+        ]);
         if (Hash::check($request->old_password, Auth::user()->password)) {
             if($request->new_password != $request->confirm_password){
                 return redirect()->back()->with("error-message","Maaf konfirmasi password salah");

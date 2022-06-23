@@ -49,9 +49,12 @@ class RoleController extends Controller
 
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'name' => 'required|string'
+        ]);
         DB::beginTransaction();
         try {
-            $requset = $request->merge(['slug'=>$request->name]);
+            $request = $request->merge(['slug'=>$request->name]);
             $this->role->create($request->all());
             DB::commit();
             return redirect()->route('role.index')->with('success-message','Data telah disimpan');
@@ -78,6 +81,9 @@ class RoleController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->validate($request, [
+            'name' => 'required|string'
+        ]);
         DB::beginTransaction();
         try {
             $request = $request->merge(['slug'=>$request->name]);
