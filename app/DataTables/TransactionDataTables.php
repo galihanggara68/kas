@@ -76,7 +76,7 @@ class TransactionDataTables extends DataTable
             ])
             ->minifiedAjax()
             ->dom('Bf<"toolbar">lrtip')
-            ->orderBy(0, "asc");
+            ->orderBy(4, "desc");
     }
 
     /**

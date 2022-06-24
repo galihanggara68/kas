@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\ProductDatatables;
 use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,9 +16,9 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, ProductDatatables $dataTables)
     {
-        return view("admin.product.index");
+        return $dataTables->render("admin.product.index");
     }
 
     public function select2Products(Request $request){
@@ -28,32 +29,6 @@ class ProductController extends Controller
     public function ajaxProduct(Request $request){
         $product = Product::find($request->id);
         return response()->json($product ? $product->only(['id', 'name', 'price']) : null);
-    }
-
-    public function source(){
-        $query= Product::query();
-        return DataTables::eloquent($query)
-        ->filter(function ($query) {
-            if (request()->has('search')) {
-                $query->where(function ($q) {
-                    $q->where('name', 'LIKE', '%' . request('search')['value'] . '%');
-                });
-            }
-            })
-            ->addColumn('name', function ($data) {
-                return Str::title($data->name);
-            })
-            ->addColumn('price', function ($data) {
-                return Str::title($data->price);
-            })
-            ->addColumn('image', function ($data) {
-                $img = explode("/", $data->image);
-                return '<img src="'.route("image.displayImage", [$img[0], $img[1], true]).'" />';
-            })
-            ->addIndexColumn()
-            ->addColumn('action', 'admin.product.index-action')
-            ->rawColumns(['action', 'image'])
-            ->toJson();
     }
 
     /**

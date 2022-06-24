@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use App\DataTables\ReportDataTables;
 use App\DataTables\Scopes\ReportScope;
 use App\Exports\TransactionExport;
-use App\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
-use Yajra\DataTables\Facades\DataTables;
 
 class ReportController extends Controller
 {
@@ -28,10 +26,11 @@ class ReportController extends Controller
     }
 
     public function exportDetail(Request $request){
-        $trExport = new TransactionExport();
-        $trExport->setDate($request->start_date, $request->end_date);
-        $fileName = "export/Laporan-".Carbon::now()->format("Y-m-d").".xlsx";
-        Excel::store($trExport, $fileName, 'public');
-        return response()->download(storage_path($fileName));
+        $this->validate($request, [
+            'start_date' => 'required',
+            'end_date' => 'required',
+        ]);
+        $fileName = "Laporan-".$request->start_date."_".$request->end_date.".xlsx";
+        return Excel::download(new TransactionExport($request->start_date, $request->end_date), $fileName);
     }
 }

@@ -8,20 +8,33 @@
         </div>
         <div class="card-body">
             <div class="card-header">
-                <div class="row">
-                    <div class="col-3">
-                        <div class="form-group">
-                            <label>Dari Tanggal</label>
-                            <input type="date" id="from_date" class="form-control" autocomplete="off" required="">
+                <form id="frm-export" action="{{route('report.export.detail')}}" method="POST">
+                    @csrf
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Dari Tanggal</label>
+                                <input type="date" name="start_date" id="from_date" class="form-control{{ $errors->has('start_date') ? ' is-invalid' : '' }}" autocomplete="off" required="">
+                                @if ($errors->has('start_date'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('start_date') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Sampai Tanggal</label>
+                                <input type="date" name="end_date" id="to_date" class="form-control{{ $errors->has('end_date') ? ' is-invalid' : '' }}" autocomplete="off" required="">
+                                @if ($errors->has('end_date'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('end_date') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                    <div class="col-3">
-                        <div class="form-group">
-                            <label>Sampai Tanggal</label>
-                            <input type="date" id="to_date" class="form-control" autocomplete="off" required="">
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
             {!! $dataTable->table() !!}
         </div>
@@ -169,24 +182,12 @@
                             let startDate = $("#from_date").val();
                             let endDate = $("#to_date").val();
                             if(startDate && endDate){
-                                $.ajax({
-                                    url: "{{route('report.export.detail')}}",
-                                    type: "POST",
-                                    data: {
-                                        start_date: startDate,
-                                        end_date: endDate,
-                                        _token: "{{csrf_token()}}"
-                                    },
-                                    success: function (response) {
-                                        window.location.href = response.url;
-                                    }
-                                })
+                                $("#frm-export").submit();
                             }else{
                                 swal({
                                     title: "Peringatan",
                                     text: "Silahkan isi tanggal terlebih dahulu",
                                     icon: "error",
-                                    buttons: true,
                                     dangerMode: true
                                 });
                             }

@@ -3,42 +3,23 @@ namespace App\Exports;
 
 use App\Transaction;
 use App\TransactionDetail;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class TransactionExport implements FromCollection, WithMapping
+class TransactionExport implements FromQuery
 {
     private $startDate;
     private $endDate;
 
-    public function setDate($startDate, $endDate)
+    public function __construct($startDate, $endDate)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
     }
 
-    public function collection()
+    public function query()
     {
-        return Transaction::query()->with("account", "details")->whereBetween("transaction_date", [$this->startDate, $this->endDate])->get();
-    }
-
-    public function map($transaction): array
-    {
-        return [
-            $transaction->id,
-            $transaction->account->name,
-            $transaction->description,
-            $transaction->transaction_date,
-            $transaction->amount,
-            $transaction->details->map(function ($detail) {
-                return [
-                    $detail->name,
-                    $detail->qty,
-                    $detail->price,
-                    $detail->amount
-                ];
-            })
-        ];
+        $transaction = Transaction::query()->whereBetween('transaction_date', [$this->startDate, $this->endDate]);
+        return TransactionDetail::query()->with('transaction')->whereIn('transaction_id', $transaction->pluck('id'))->select("*");
     }
 }

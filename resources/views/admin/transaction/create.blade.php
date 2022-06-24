@@ -114,14 +114,14 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text" id="basic-addon1">Rp</span>
                                                             </div>
-                                                            <input type="number" name="detail_amount[]" class="form-control price" min="0" value="0" reqired/>
+                                                            <input type="number" name="detail_amount[]" class="form-control price" min="0" value="0" required/>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="form-group qty">
                                                         <label>Qty</label>
-                                                        <input type="number" name="detail_qty[]" class="form-control qty" min="1" value="1" reqired/>
+                                                        <input type="number" name="detail_qty[]" class="form-control qty" min="1" value="1" required/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -143,7 +143,7 @@
                     <div class="col">
                         <div class="form-gorup">
                             <button type="submit" class="btn btn-primary btn-sm shadow-sm">Simpan</button>
-                            <button type="button" class="btn btn-light btn-sm shadow-sm" href="#" data-dismiss="">Batal</button>
+                            <a class="btn btn-light btn-sm shadow-sm" href="{{route('transaction.index', $transaction_type)}}" data-dismiss="">Batal</a>
                             {{-- <a class="btn btn-light btn-sm shadow-sm" href="{{route('transaction.index')}}">Batal</a> --}}
                         </div>
                     </div>
@@ -192,14 +192,14 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text" id="basic-addon1">Rp</span>
                                                             </div>
-                                                            <input type="number" name="detail_amount[]" class="form-control price" min="0" value="0" reqired/>
+                                                            <input type="number" name="detail_amount[]" class="form-control price" min="0" value="0" required/>
                                                         </div>`;
                 html += '</div>';
                 html += '</div>';
                 html += '<div class="col-6">';
                 html += '<div class="form-group qty">';
                 html += '<label>Qty</label>';
-                html += '<input type="number" name="detail_qty[]" class="form-control form-control-sm qty" min="1" value="1" reqired/>';
+                html += '<input type="number" name="detail_qty[]" class="form-control form-control-sm qty" min="1" value="1" required/>';
                 html += '</div>';
                 html += '</div>';
                 html += '</div>';
@@ -238,6 +238,8 @@
             function configSelect2(){
                 $(".select2").select2({
                     tags: true,
+                    placeholder: "Pilih nama pemasukan / produk",
+                    minimumInputLength: 3,
                     width: "resolve",
                     ajax: {
                         url: "{{route('product.products')}}",
@@ -262,8 +264,14 @@
                         type: "POST",
                         dataType: "json",
                         success: function(data){
-                            console.log($(e.target).closest(".price"));
-                            $(e.target).closest(".price").val(data.price);
+                            let priceElem = $(e.target).parent().parent().parent().find("input.price");
+                            if(data.price){
+                                priceElem.attr("readonly", "");
+                                console.log(priceElem);
+                                priceElem.val(data.price);
+                            }else{
+                                priceElem.removeAttr("readonly");
+                            }
                         }
                     });
                     recalculateAmount();

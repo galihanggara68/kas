@@ -7,13 +7,8 @@ use App\DataTables\Scopes\TransactionScope;
 use App\DataTables\TransactionDataTables;
 use App\Transaction;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade as PDF;
-use App\Exports\TransactionExport;
 use App\Product;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Str;
 
 class TransactionController extends Controller
@@ -48,8 +43,9 @@ class TransactionController extends Controller
             'description' => 'required',
             'transaction_type' => 'required',
             'transaction_date' => 'required',
-            'amount' => 'required'
+            'amount' => 'required|numeric|min:1',
         ]);
+
         DB::beginTransaction();
         try {
             if($request->has('image')){
@@ -81,9 +77,9 @@ class TransactionController extends Controller
                     }else{
                         $data = [
                             "name" => $request->detail_name[$i],
-                            "price" => $request->detail_price[$i],
+                            "price" => $request->detail_amount[$i],
                             "qty" => $request->detail_qty[$i],
-                            "amount" => $request->detail_qty[$i] * $request->detail_price[$i]
+                            "amount" => $request->detail_qty[$i] * $request->detail_amount[$i]
                         ];
                     }
                     $trans->details()->create($data);
@@ -125,7 +121,7 @@ class TransactionController extends Controller
             'description' => 'required',
             'transaction_type' => 'required',
             'transaction_date' => 'required',
-            'amount' => 'required'
+            'amount' => 'required|numeric|min:1'
         ]);
         DB::beginTransaction();
         try {
@@ -155,19 +151,5 @@ class TransactionController extends Controller
     {
         $this->transaction->destroy($id);
         return redirect()->back()->with('success-message','Data telah dihapus');
-    }
-
-    public function print($id){
-        $data = $this->transaction->find($id);
-        // return view('admin.transaction.cetak',compact(['data']));
-        $pdf = PDF::loadView('admin.transaction.cetak',compact(['data']));
-        return $pdf->stream($data->invoice_no.'.pdf');
-    }
-
-    // not yet
-    public function export(Request $request){
-        $transaction = new TransactionExport();
-        $transaction->setDate($request->from,$request->to);
-        return Excel::download($transaction, 'laporan_trx_'.$request->from.'_'.$request->to.'.xlsx');
     }
 }

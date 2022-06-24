@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use App\Setting;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-
 
 class SettingController extends Controller
 {
