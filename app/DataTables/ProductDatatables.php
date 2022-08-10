@@ -19,11 +19,11 @@ class ProductDatatables extends DataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('image', function ($data) {
-                if($data->image){
+                if ($data->image && preg_match("/product/", $data->image)) {
                     $img = explode("/", $data->image);
-                    return '<img src="'.route("image.displayImage", [$img[0], $img[1], true]).'" />';
-                }else{
-                    return '<img width="120" src="'.asset("assets/img/no-image.png").'" />';
+                    return '<img src="' . route("image.displayImage", [$img[0], $img[1], true]) . '" />';
+                } else {
+                    return '<img width="120" src="' . asset("assets/img/no-image.png") . '" />';
                 }
             })
             ->addColumn('action', 'admin.product.index-action')

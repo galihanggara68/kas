@@ -21,12 +21,14 @@ class ProductController extends Controller
         return $dataTables->render("admin.product.index");
     }
 
-    public function select2Products(Request $request){
-        $products = Product::where('name', 'like', '%'.$request->q.'%')->get();
+    public function select2Products(Request $request)
+    {
+        $products = Product::where('name', 'like', '%' . $request->q . '%')->get();
         return response()->json($products ?? []);
     }
 
-    public function ajaxProduct(Request $request){
+    public function ajaxProduct(Request $request)
+    {
         $product = Product::find($request->id);
         return response()->json($product ? $product->only(['id', 'name', 'price']) : null);
     }
@@ -50,22 +52,23 @@ class ProductController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->all();
-            if($request->has('image')){
+            if ($request->has('image')) {
                 $fileName = Str::uuid();
 
-                $request->image->storeAs(
-                    'public/image/product',$fileName.'.'.$request->image->extension()
+                $img = $request->image->storeAs(
+                    'public/image/product',
+                    $fileName . '.' . $request->image->extension()
                 );
-                $image = 'product/'.$fileName.'.'.$request->image->getClientOriginalExtension();
+                $image = preg_replace("/public\/image\//", "", $img);
                 $data['image'] = $image;
             }
             $data['slug'] = Str::slug($request->name);
             Product::create($data);
             DB::commit();
-            return redirect()->back()->with('success-message','Data telah disimpan');
+            return redirect()->back()->with('success-message', 'Data telah disimpan');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error-message',$e->getMessage());
+            return redirect()->back()->with('error-message', $e->getMessage());
         }
     }
 
@@ -73,14 +76,12 @@ class ProductController extends Controller
     {
         $data = Product::find($id);
         return $data;
-
     }
 
     public function edit($id)
     {
         $data = Product::find($id);
-        return view('admin.product.edit',compact('data'));
-
+        return view('admin.product.edit', compact('data'));
     }
 
     public function update(Request $request, $id)
@@ -91,20 +92,30 @@ class ProductController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            $request = $request->merge(['slug'=>$request->name]);
-            Product::find($id)->update($request->all());
+            $request = $request->merge(['slug' => $request->name]);
+            $data = $request->all();
+            if ($request->has('image')) {
+                $fileName = Str::uuid();
+
+                $img = $request->image->storeAs(
+                    'public/image/product',
+                    $fileName . '.' . $request->image->extension()
+                );
+                $image = preg_replace("/public\/image\//", "", $img);
+                $data['image'] = $image;
+            }
+            Product::find($id)->update($data);
             DB::commit();
-            return redirect()->route('product.index')->with('success-message','Data telah d irubah');
+            return redirect()->route('product.index')->with('success-message', 'Data telah d irubah');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error-message',$e->getMessage());
+            return redirect()->back()->with('error-message', $e->getMessage());
         }
-
     }
 
     public function destroy($id)
     {
         Product::destroy($id);
-        return redirect()->route('product.index')->with('success-message','Data telah dihapus');
+        return redirect()->route('product.index')->with('success-message', 'Data telah dihapus');
     }
 }

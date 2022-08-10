@@ -23,11 +23,11 @@ class TransactionDataTables extends DataTable
         return datatables()
             ->eloquent($query)
             ->addColumn('images', function ($data) {
-                if($data->images){
+                if ($data->images && preg_match("/transaction/", $data->image)) {
                     $img = explode("/", $data->images);
-                    return '<img src="'.route("image.displayImage", [$img[0], $img[1], true]).'" />';
-                }else{
-                    return '<img width="120" src="'.asset("assets/img/no-image.png").'" />';
+                    return '<img src="' . route("image.displayImage", [$img[0], $img[1], true]) . '" />';
+                } else {
+                    return '<img width="120" src="' . asset("assets/img/no-image.png") . '" />';
                 }
             })
             ->addIndexColumn()

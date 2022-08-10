@@ -19,8 +19,9 @@ class TransactionController extends Controller
         $this->transaction = new Transaction();
     }
 
-    public function index(Request $request, TransactionDataTables $dataTable, $transaction_type){
-        if($transaction_type){
+    public function index(Request $request, TransactionDataTables $dataTable, $transaction_type)
+    {
+        if ($transaction_type) {
             $dataTable->addScope(new TransactionScope($transaction_type));
         }
         $accounts = Account::all();
@@ -31,7 +32,7 @@ class TransactionController extends Controller
     public function create($transaction_type)
     {
         $accounts = Account::all();
-        return view('admin.transaction.create',compact(['transaction_type', 'accounts']));
+        return view('admin.transaction.create', compact(['transaction_type', 'accounts']));
     }
 
     // simpan transaksi
@@ -48,24 +49,25 @@ class TransactionController extends Controller
 
         DB::beginTransaction();
         try {
-            if($request->has('image')){
+            if ($request->has('image')) {
                 $fileName = Str::uuid();
 
-                $request->image->storeAs(
-                    'public/image/transaction',$fileName.'.'.$request->image->extension()
+                $img = $request->image->storeAs(
+                    'public/image/transaction',
+                    $fileName . '.' . $request->image->extension()
                 );
                 $request->merge([
-                    'images'=>'transaction/'.$fileName.'.'.$request->image->extension()
+                    'images' => preg_replace("/public\/image\//", "", $img)
                 ]);
             }
             $request->merge([
-                'slug'=> Str::slug($request->name)
+                'slug' => Str::slug($request->name)
             ]);
             $trans = $this->transaction->create($request->all());
-            if($request->withDetail == "on"){
-                for($i = 0; $i < count($request->detail_name); $i++){
+            if ($request->withDetail == "on") {
+                for ($i = 0; $i < count($request->detail_name); $i++) {
                     // $data = [];
-                    if(is_numeric($request->detail_name[$i])){
+                    if (is_numeric($request->detail_name[$i])) {
                         $product = Product::find($request->detail_name[$i]);
                         $data = [
                             "product_id" => $request->detail_name[$i],
@@ -74,7 +76,7 @@ class TransactionController extends Controller
                             "qty" => $request->detail_qty[$i],
                             "amount" => $request->detail_qty[$i] * $product->price
                         ];
-                    }else{
+                    } else {
                         $data = [
                             "name" => $request->detail_name[$i],
                             "price" => $request->detail_amount[$i],
@@ -86,12 +88,11 @@ class TransactionController extends Controller
                 }
             }
             DB::commit();
-            return redirect()->back()->with('success-message','Data telah disimpan');
+            return redirect()->back()->with('success-message', 'Data telah disimpan');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error-message',$e->getMessage());
+            return redirect()->back()->with('error-message', $e->getMessage());
         }
-
     }
 
     // detail transaksi
@@ -99,8 +100,7 @@ class TransactionController extends Controller
     {
         $data = Transaction::find($id);
         $accounts = Account::all();
-        return view('admin.transaction.show',compact(['data', 'accounts']));
-
+        return view('admin.transaction.show', compact(['data', 'accounts']));
     }
 
     // halaman edit transaksi
@@ -108,8 +108,7 @@ class TransactionController extends Controller
     {
         $data = Transaction::find($id);
         $accounts = Account::all();
-        return view('admin.transaction.edit',compact(['data', 'accounts']));
-
+        return view('admin.transaction.edit', compact(['data', 'accounts']));
     }
 
     // update transaksi
@@ -125,31 +124,31 @@ class TransactionController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            if($request->has('image')){
+            if ($request->has('image')) {
                 $fileName = Str::uuid();
 
-                $request->image->storeAs(
-                    'public/image/transaction',$fileName.'.'.$request->image->extension()
+                $img = $request->image->storeAs(
+                    'public/image/transaction',
+                    $fileName . '.' . $request->image->extension()
                 );
                 $request->merge([
-                    'images'=>'transaction/'.$fileName.'.'.$request->image->extension()
+                    'images' => preg_replace("/public\/image\//", "", $img)
                 ]);
             }
             $this->transaction->find($id)->update($request->all());
 
             DB::commit();
-            return redirect()->route('transaction.index',$this->transaction->find($id)->transaction_type)->with('success-message','Data telah d irubah');
+            return redirect()->route('transaction.index', $this->transaction->find($id)->transaction_type)->with('success-message', 'Data telah d irubah');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error-message',$e->getMessage());
+            return redirect()->back()->with('error-message', $e->getMessage());
         }
-
     }
 
     // hapus transaksi
     public function destroy($id)
     {
         $this->transaction->destroy($id);
-        return redirect()->back()->with('success-message','Data telah dihapus');
+        return redirect()->back()->with('success-message', 'Data telah dihapus');
     }
 }

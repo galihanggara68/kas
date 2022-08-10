@@ -186,41 +186,12 @@
                         }
                     },
                     {
-                        "extend": "pdf",
-                        "text": "Export PDF <i class='fa fa-file-pdf'></i>",
-                        "className": "btn btn-danger mt-4",
-                        "exportOptions": {
-                            "modifier": {
-                                "page": "all",
-                                "search": "none"
-                            }
-                        }
-                    },
-                    {
                         "text": "Reset Filter",
                         "className": "btn btn-info mt-4",
                         "action": function(e, dt, node, config) {
                             $("#from_date").val('');
                             $("#to_date").val('');
                             dt.search('').draw();
-                        }
-                    },
-                    {
-                        "text": "Export Dengan Detail",
-                        "className": "btn btn-info mt-4",
-                        "action": function(e, dt, node, config) {
-                            let startDate = $("#from_date").val();
-                            let endDate = $("#to_date").val();
-                            if (startDate && endDate) {
-                                $("#frm-export").submit();
-                            } else {
-                                swal({
-                                    title: "Peringatan",
-                                    text: "Silahkan isi tanggal terlebih dahulu",
-                                    icon: "error",
-                                    dangerMode: true
-                                });
-                            }
                         }
                     }
                 ],
